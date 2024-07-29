@@ -1,7 +1,7 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
-#include "ExtendingTheEditor.h"
 #include "ExtendingTheEditorCharacter.h"
+#include "ExtendingTheEditor.h"
 #include "ExtendingTheEditorProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "GameFramework/InputSettings.h"
@@ -22,14 +22,14 @@ AExtendingTheEditorCharacter::AExtendingTheEditorCharacter()
 
 	// Create a CameraComponent	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->AttachParent = GetCapsuleComponent();
-	FirstPersonCameraComponent->RelativeLocation = FVector(0, 0, 64.f); // Position the camera
+	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+	FirstPersonCameraComponent->SetRelativeLocation(FVector(0, 0, 64.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);
-	Mesh1P->AttachParent = FirstPersonCameraComponent;
+	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 
@@ -38,7 +38,7 @@ AExtendingTheEditorCharacter::AExtendingTheEditorCharacter()
 	FP_Gun->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
 	FP_Gun->bCastDynamicShadow = false;
 	FP_Gun->CastShadow = false;
-	FP_Gun->AttachTo(Mesh1P, TEXT("GripPoint"), EAttachLocation::SnapToTargetIncludingScale, true);
+	//FP_Gun->AttachToComponent(Mesh1P, TEXT("GripPoint"), EAttachLocation::SnapToTargetIncludingScale, true);
 
 
 	// Default offset from the character location for projectiles to spawn
@@ -51,30 +51,30 @@ AExtendingTheEditorCharacter::AExtendingTheEditorCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AExtendingTheEditorCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+void AExtendingTheEditorCharacter::SetupPlayerInputComponent(class UInputComponent* InInputComponent)
 {
 	// set up gameplay key bindings
-	check(InputComponent);
+	check(InInputComponent);
 
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	InInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	InInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	
-	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AExtendingTheEditorCharacter::TouchStarted);
-	if( EnableTouchscreenMovement(InputComponent) == false )
+	//InInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AExtendingTheEditorCharacter::TouchStarted);
+	if( EnableTouchscreenMovement(InInputComponent) == false )
 	{
-		InputComponent->BindAction("Fire", IE_Pressed, this, &AExtendingTheEditorCharacter::OnFire);
+		InInputComponent->BindAction("Fire", IE_Pressed, this, &AExtendingTheEditorCharacter::OnFire);
 	}
 	
-	InputComponent->BindAxis("MoveForward", this, &AExtendingTheEditorCharacter::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &AExtendingTheEditorCharacter::MoveRight);
+	InInputComponent->BindAxis("MoveForward", this, &AExtendingTheEditorCharacter::MoveForward);
+	InInputComponent->BindAxis("MoveRight", this, &AExtendingTheEditorCharacter::MoveRight);
 	
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	InputComponent->BindAxis("TurnRate", this, &AExtendingTheEditorCharacter::TurnAtRate);
-	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	InputComponent->BindAxis("LookUpRate", this, &AExtendingTheEditorCharacter::LookUpAtRate);
+	InInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	InInputComponent->BindAxis("TurnRate", this, &AExtendingTheEditorCharacter::TurnAtRate);
+	InInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	InInputComponent->BindAxis("LookUpRate", this, &AExtendingTheEditorCharacter::LookUpAtRate);
 }
 
 void AExtendingTheEditorCharacter::OnFire()
@@ -203,15 +203,15 @@ void AExtendingTheEditorCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-bool AExtendingTheEditorCharacter::EnableTouchscreenMovement(class UInputComponent* InputComponent)
+bool AExtendingTheEditorCharacter::EnableTouchscreenMovement(class UInputComponent* InInputComponent)
 {
 	bool bResult = false;
 	if(FPlatformMisc::GetUseVirtualJoysticks() || GetDefault<UInputSettings>()->bUseMouseForTouch )
 	{
 		bResult = true;
-		InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AExtendingTheEditorCharacter::BeginTouch);
-		InputComponent->BindTouch(EInputEvent::IE_Released, this, &AExtendingTheEditorCharacter::EndTouch);
-		InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AExtendingTheEditorCharacter::TouchUpdate);
+		InInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AExtendingTheEditorCharacter::BeginTouch);
+		InInputComponent->BindTouch(EInputEvent::IE_Released, this, &AExtendingTheEditorCharacter::EndTouch);
+		InInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AExtendingTheEditorCharacter::TouchUpdate);
 	}
 	return bResult;
 }

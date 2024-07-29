@@ -4,8 +4,10 @@ using UnrealBuildTool;
 
 public class ExtendingTheEditor : ModuleRules
 {
-	public ExtendingTheEditor(TargetInfo Target)
-	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+	public ExtendingTheEditor(ReadOnlyTargetRules Target) : base(Target)
+    {
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 	}
 }

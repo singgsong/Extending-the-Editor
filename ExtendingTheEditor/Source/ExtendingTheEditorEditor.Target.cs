@@ -5,21 +5,27 @@ using System.Collections.Generic;
 
 public class ExtendingTheEditorEditorTarget : TargetRules
 {
-	public ExtendingTheEditorEditorTarget(TargetInfo Target)
-	{
-		Type = TargetType.Editor;
-	}
+	public ExtendingTheEditorEditorTarget(TargetInfo Target) : base(Target)
+    {
+        Type = TargetType.Editor;
+        DefaultBuildSettings = BuildSettingsVersion.V5;
 
-	//
-	// TargetRules interface.
-	//
+        ExtraModuleNames.AddRange(new string[] { "ExtendingTheEditor" });
+    }
+    //{
+    //	Type = TargetType.Editor;
+    //}
 
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("ExtendingTheEditor");
-	}
+    ////
+    //// TargetRules interface.
+    ////
+
+    //public override void SetupBinaries(
+    //	TargetInfo Target,
+    //	ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
+    //	ref List<string> OutExtraModuleNames
+    //	)
+    //{
+    //	OutExtraModuleNames.Add("ExtendingTheEditor");
+    //}
 }

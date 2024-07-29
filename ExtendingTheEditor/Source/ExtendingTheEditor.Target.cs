@@ -5,21 +5,28 @@ using System.Collections.Generic;
 
 public class ExtendingTheEditorTarget : TargetRules
 {
-	public ExtendingTheEditorTarget(TargetInfo Target)
-	{
-		Type = TargetType.Game;
-	}
+	public ExtendingTheEditorTarget(TargetInfo Target) : base(Target)
+    {
+        Type = TargetType.Game;
+        DefaultBuildSettings = BuildSettingsVersion.V5;
 
-	//
-	// TargetRules interface.
-	//
+        ExtraModuleNames.AddRange(new string[] { "ExtendingTheEditor" });
+    }
+    //{
+    //	Type = TargetType.Game;
+    //}
 
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("ExtendingTheEditor");
-	}
+    ////
+    //// TargetRules interface.
+    ////
+
+    //public override void SetupBinaries(
+    //	TargetInfo Target,
+    //	ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
+    //	ref List<string> OutExtraModuleNames
+    //	)
+    //{
+    //	OutExtraModuleNames.Add("ExtendingTheEditor");
+    //}
 }
+
